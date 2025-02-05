@@ -26,11 +26,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Do not perform a reset
         reset: Reset::Run,
     })?;
+
+    // Wait for the for measurement to be done
+    let conversion_time: Duration = ina.configuration()?.conversion_time().unwrap();
+    std::thread::sleep(coversion_time);
     
     /*
     // Wait until a result is ready
     std::thread::sleep(ina.configuration().unwrap().conversion_time().unwrap());
-
     println!("Bus Voltage: {}", ina.bus_voltage().unwrap());
     println!("Shunt Voltage: {}", ina.shunt_voltage().unwrap());
     */
