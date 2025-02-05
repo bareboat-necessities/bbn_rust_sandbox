@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let delay = Delay;
 
     // Initialize the INA219 sensor with default address (0x40)
-    let mut ina219 = SyncIna219::new(i2c, Address::default(), delay);
+    let mut ina219 = SyncIna219::new(i2c, Address::default());
 
     // Configure the INA219 sensor
     let calibration = Calibration::calibrate(
