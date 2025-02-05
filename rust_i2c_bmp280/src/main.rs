@@ -14,11 +14,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     bmp280.init().unwrap();
 
     loop {
-        // Read pressure data
-        let pressure = bmp280.read_pressure()?;
+       let measurements = bme280.measure().unwrap();
 
         // Print the pressure in Pascals (Pa)
-        println!("Pressure: {:.2} Pa", pressure);
+        println!("Pressure: {:.2} Pa", measurements.pressure);
 
         // Wait for a second before reading again
         thread::sleep(Duration::from_secs(1));
