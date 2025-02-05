@@ -1,5 +1,6 @@
 use linux_embedded_hal::{I2cdev, Delay};
-use ina219::{INA219, Measurement, Configuration, Calibration, BusVoltageRange, Gain, Address};
+use ina219::SyncIna219;
+use ina219::configuration::{Measurement, Configuration, Calibration, BusVoltageRange, Gain, Address};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the I2C device (e.g., /dev/i2c-1 on Raspberry Pi)
@@ -9,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let delay = Delay;
 
     // Initialize the INA219 sensor with default address (0x40)
-    let mut ina219 = INA219::new(i2c, Address::default(), delay);
+    let mut ina219 = SyncIna219::new(i2c, Address::default(), delay);
 
     // Configure the INA219 sensor
     let calibration = Calibration::calibrate(
