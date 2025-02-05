@@ -8,13 +8,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let i2c_bus = I2cdev::new("/dev/i2c-1").unwrap();
 
     // Initialize BMP280 sensor
-    let mut bme280 = BME280::new_primary(i2c_bus);
+    let mut bmp280 = BME280::new_primary(i2c_bus);
 
     // Initialize the sensor
-    bme280.init(Delay).unwrap();
+    bmp280.init(Delay).unwrap();
 
     loop {
-        let measurements = bme280.measure(Delay).unwrap();
+        let measurements = bmp280.measure(Delay).unwrap();
 
         // Print the pressure in Pascals (Pa)
         println!("Pressure: {:.2} Pa", measurements.pressure);
