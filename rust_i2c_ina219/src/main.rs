@@ -1,6 +1,8 @@
 use linux_embedded_hal::{I2cdev, Delay};
 use ina219::SyncIna219;
-use ina219::configuration::{Measurement, Configuration, Calibration, BusVoltageRange, Gain, Address};
+use ina219::configuration::{Measurement, Configuration, BusVoltageRange, Gain, Address};
+use ina219::calibration::{Calibration};
+use ina219::measurement::{CurrentRegister, PowerRegister};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the I2C device (e.g., /dev/i2c-1 on Raspberry Pi)
