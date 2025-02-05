@@ -1,31 +1,18 @@
-use ds18b20_2::{Ds18b20, Resolution};
-use one_wire_bus_2::{OneWire};
+mod ds18b20;
+mod w1_errors;
+use std::env;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /*
-    // Initialize the 1-Wire bus on GPIO pin 4 (BCM numbering)
-    let mut one_wire_bus = OneWire::new(4).unwrap();
+fn main() {
+    let sensor = ds18b20::DS18B20::new().unwrap();
+    let temp = sensor.read_temp().unwrap();
 
-    // Search for connected devices on the bus
-    let mut devices = one_wire_bus.devices(false, &mut Delay)?;
-
-    // Check if any DS18B20 sensor is found
-    if let Some(device_address) = devices.next() {
-        println!("Found DS18B20 sensor: {:?}", device_address);
-
-        // Create a DS18B20 instance
-        let sensor = Ds18b20::new(device_address)?;
-
-        // Set the resolution (optional, default is 12-bit)
-        sensor.set_resolution(&mut one_wire_bus, Resolution::Bits12)?;
-
-        // Read the temperature
-        let temperature = sensor.read_temperature(&mut one_wire_bus)?;
-        println!("Temperature: {:.2}°C", temperature);
-    } else {
-        println!("No DS18B20 sensor found!");
+    // Default print friendly, but allow "-r/--raw" to
+    // be passed to display the millicelsius directly instead
+    let args: Vec<String> = env::args().collect();
+    if (args.len() > 1) && args[1].contains("-r") {
+        println!("{}", temp.as_u32());
     }
-    */
-
-    Ok(())
+    else {
+        println!("{:.1} F", temp.to_fahrenheit());
+    }
 }
