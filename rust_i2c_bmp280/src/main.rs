@@ -1,20 +1,20 @@
-use bme280::i2c::BME280;
 use linux_embedded_hal::{Delay, I2cdev};
+use bme280::i2c::BME280;
 use std::thread;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize I2C device (e.g., /dev/i2c-1 on Raspberry Pi)
-    let i2c = I2cdev::new("/dev/i2c-1")?;
+    let i2c_bus = I2cdev::new("/dev/i2c-1").unwrap();
 
     // Initialize BMP280 sensor
-    let mut bmp280 = BME280::new_primary(i2c, Delay);
+    let mut bme280 = BME280::new_primary(i2c_bus, Delay);
 
     // Initialize the sensor
-    bmp280.init().unwrap();
+    bme280.init().unwrap();
 
     loop {
-       let measurements = bmp280.measure().unwrap();
+        let measurements = bme280.measure().unwrap();
 
         // Print the pressure in Pascals (Pa)
         println!("Pressure: {:.2} Pa", measurements.pressure);
