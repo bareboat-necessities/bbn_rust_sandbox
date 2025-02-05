@@ -6,6 +6,7 @@ use ina219::configuration::{
 use ina219::SyncIna219;
 use linux_embedded_hal::I2cdev;
 use std::error::Error;
+use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let i2c_bus = I2cdev::new("/dev/i2c-1").unwrap();
