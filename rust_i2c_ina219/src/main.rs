@@ -10,8 +10,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Wait until a result is ready
     std::thread::sleep(ina.configuration()?.conversion_time().unwrap());
 
-    println!("Bus Voltage: {}", ina.bus_voltage());
-    println!("Shunt Voltage: {}", ina.shunt_voltage());
+    println!("Bus Voltage: {}", ina.bus_voltage().unwrap());
+    println!("Shunt Voltage: {}", ina.shunt_voltage().unwrap());
 
     Ok(())
 }
