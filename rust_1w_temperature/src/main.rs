@@ -3,7 +3,7 @@ use one_wire_bus::{OneWire};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the 1-Wire bus on GPIO pin 4 (BCM numbering)
-    let mut one_wire_bus = OneWire::new(4)?;
+    let mut one_wire_bus = OneWire::new(4).unwrap();
 
     // Search for connected devices on the bus
     let mut devices = one_wire_bus.devices(false)?;
