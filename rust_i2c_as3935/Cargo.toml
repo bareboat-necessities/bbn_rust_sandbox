@@ -1,5 +1,5 @@
 [package]
-name = "lightning-detect"
+name = "rust_i2c_as3935"
 version = "0.1.0"
 edition = "2021"
 
