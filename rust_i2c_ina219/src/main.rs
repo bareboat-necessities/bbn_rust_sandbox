@@ -9,7 +9,7 @@ use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let i2c_bus = I2cdev::new("/dev/i2c-1").unwrap();
-    let mut ina = SyncIna219::new(i2c_bus, Address::from_byte(0x42).unwrap());
+    let mut ina = SyncIna219::new(i2c_bus, Address::from_byte(0x42).unwrap()).unwrap();
 
     ina.set_configuration(Configuration {
         // Be extra precise, but take some extra time
