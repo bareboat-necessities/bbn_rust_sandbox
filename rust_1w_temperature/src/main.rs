@@ -6,7 +6,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut one_wire_bus = OneWire::new(4).unwrap();
 
     // Search for connected devices on the bus
-    let mut devices = one_wire_bus.devices(false)?;
+    let mut devices = one_wire_bus.devices(false, &mut Delay)?;
 
     // Check if any DS18B20 sensor is found
     if let Some(device_address) = devices.next() {
