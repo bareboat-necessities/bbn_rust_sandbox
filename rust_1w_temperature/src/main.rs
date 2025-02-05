@@ -1,4 +1,4 @@
-use ds18b20-2::{Ds18b20, Resolution};
+use ds18b20_2::{Ds18b20, Resolution};
 use onewire::{OneWire, Bus};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
