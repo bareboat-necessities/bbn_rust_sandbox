@@ -1,0 +1,11 @@
+[package]
+name = "rust_xdr"
+version = "0.1.0"
+edition = "2021"
+authors = ["mgrouch <noreply@mgrouch.github.com>"]
+description = "A Rust library to generate NMEA XDR sentences."
+license = "MIT"
+repository = "https://github.com/bareboat-necessities/bbn_rust_sandbox/rust_xdr"
+
+[dependencies]
+# Add any dependencies here if needed
