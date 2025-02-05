@@ -28,15 +28,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         reset: Reset::Run,
     })?;
 
+    /*
     // Wait for the for measurement to be done
     std::thread::sleep(ina.configuration()?.conversion_time().unwrap());
+    */
     
-    /*
-    // Wait until a result is ready
-    std::thread::sleep(ina.configuration().unwrap().conversion_time_us().unwrap());
     println!("Bus Voltage: {}", ina.bus_voltage().unwrap());
     println!("Shunt Voltage: {}", ina.shunt_voltage().unwrap());
-    */
     
     Ok(())
 }
