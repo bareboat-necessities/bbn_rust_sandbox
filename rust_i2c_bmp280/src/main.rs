@@ -8,10 +8,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let i2c_bus = I2cdev::new("/dev/i2c-1").unwrap();
 
     // Initialize BMP280 sensor
-    let mut bme280 = BME280::new_primary(i2c_bus, Delay);
+    let mut bme280 = BME280::new_primary(i2c_bus);
 
     // Initialize the sensor
-    bme280.init().unwrap();
+    bme280.init(Delay).unwrap();
 
     loop {
         let measurements = bme280.measure().unwrap();
