@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-one-wire-bus = "0.1.1"
+one-wire-bus-2 = "0.1.1"
 ds18b20-2 = "0.1.1"
