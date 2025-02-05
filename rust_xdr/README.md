@@ -1,6 +1,3 @@
-This file provides documentation for the project.
-
-```markdown
 # NMEA XDR Generator
 
 A Rust library to generate NMEA XDR sentences.
