@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 linux-embedded-hal = "0.4.0"  # For I2C communication on Linux
-bmp280 = "0.4.0"              # BMP280 driver
+bme280 = "0.5.1"              # BME280/BMP280 driver
