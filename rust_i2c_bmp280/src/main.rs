@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     bme280.init(Delay).unwrap();
 
     loop {
-        let measurements = bme280.measure().unwrap();
+        let measurements = bme280.measure(Delay).unwrap();
 
         // Print the pressure in Pascals (Pa)
         println!("Pressure: {:.2} Pa", measurements.pressure);
