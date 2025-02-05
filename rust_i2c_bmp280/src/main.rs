@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut bmp280 = BME280::new_primary(i2c);
 
     // Initialize the sensor
-    bmp280.init()?;
+    bmp280.init().unwrap();
 
     loop {
         // Read pressure data
