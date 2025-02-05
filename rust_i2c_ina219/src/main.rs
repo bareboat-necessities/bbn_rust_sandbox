@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     })?;
 
     // Wait for the for measurement to be done
-    let conversion_time: Duration = ina.configuration()?.conversion_time().unwrap();
+    let conversion_time: Duration = ina.configuration().conversion_time().unwrap();
     std::thread::sleep(coversion_time);
     
     /*
