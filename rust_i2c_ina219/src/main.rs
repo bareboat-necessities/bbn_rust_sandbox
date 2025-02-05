@@ -1,4 +1,8 @@
 use ina219::address::Address;
+use ina219::configuration::{
+    BusVoltageRange, Configuration, MeasuredSignals, OperatingMode, Reset, Resolution,
+    ShuntVoltageRange,
+};
 use ina219::SyncIna219;
 use linux_embedded_hal::I2cdev;
 use std::error::Error;
