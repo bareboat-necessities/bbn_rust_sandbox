@@ -1,6 +1,7 @@
 use linux_embedded_hal::{I2cdev, Delay};
 use ina219::SyncIna219;
-use ina219::configuration::{Configuration, BusVoltageRange, Gain, Address};
+use ina219::address::Address;
+use ina219::configuration::{Configuration, BusVoltageRange, Gain};
 use ina219::calibration::{Calibration};
 use ina219::measurements::{Measurement, CurrentRegister, PowerRegister};
 
