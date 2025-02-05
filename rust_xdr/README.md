@@ -6,8 +6,8 @@ A Rust library to generate NMEA XDR sentences.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/nmea-xdr-generator.git
-   cd nmea-xdr-generator
+   git clone https://github.com/bareboat-necessities/bbn_rust_sandbox
+   cd bbn_rust_sandbox/rust_xdr
    ```
 
 2. Build the project:
