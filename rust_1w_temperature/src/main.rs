@@ -1,5 +1,5 @@
 use ds18b20_2::{Ds18b20, Resolution};
-use onewire::{OneWire, Bus};
+use one_wire_bus::{OneWire};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the 1-Wire bus on GPIO pin 4 (BCM numbering)
