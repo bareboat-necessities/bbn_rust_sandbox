@@ -8,7 +8,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let i2c = I2cdev::new("/dev/i2c-1")?;
 
     // Initialize BMP280 sensor
-    let mut bmp280 = BMP280::new_primary(i2c, Delay);
+    let mut bmp280 = BMP280::new_primary(i2c);
 
     // Initialize the sensor
     bmp280.init()?;
