@@ -2,14 +2,11 @@ use std::{fs,io,num};
 use std::path::PathBuf;
 use crate::w1_errors::*;
 
-
-
 static W1_PATH_PREFIX: &str = "/sys/bus/w1/devices";
 static W1_PATH_SUFFIX: &str = "w1_slave";
 
-
-
 pub struct MilliCelsius(u32);
+
 impl MilliCelsius {
     pub fn to_fahrenheit(self) -> f64 {
         (self.0 as f64) / 1000.0 / 5.0 * 9.0 + 32.0
@@ -19,8 +16,6 @@ impl MilliCelsius {
         self.0
     }
 }
-
-
 
 pub struct DS18B20 {
     w1_id: String
