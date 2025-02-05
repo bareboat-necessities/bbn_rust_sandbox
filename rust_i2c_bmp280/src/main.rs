@@ -1,4 +1,4 @@
-use bme280::BMP280;
+use bme280::i2c::BMP280;
 use linux_embedded_hal::{Delay, I2cdev};
 use std::thread;
 use std::time::Duration;
