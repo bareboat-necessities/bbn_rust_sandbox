@@ -36,7 +36,7 @@ This project is licensed under the MIT License.
 Here’s how the project directory should look:
 
 ```
-nmea-xdr-generator/
+rust_xdr/
 ├── Cargo.toml
 ├── Cargo.lock
 ├── src/
