@@ -29,10 +29,8 @@ $IIXDR,29.5,P,B,ENGINE,25.0,T,C,COOLING*42
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-```
+This project is licensed under the MIT License.
 
----
 
 ### Project Structure
 Here’s how the project directory should look:
@@ -47,19 +45,4 @@ nmea-xdr-generator/
 └── .gitignore
 ```
 
----
 
-### `.gitignore`
-Add a `.gitignore` file to exclude unnecessary files from version control.
-
-```gitignore
-# Ignore Cargo build artifacts
-/target/
-**/*.rs.bk
-
-# Ignore Cargo lock file
-Cargo.lock
-
-# Ignore IDE-specific files
-.vscode/
-.idea/
