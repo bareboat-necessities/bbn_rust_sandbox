@@ -1,8 +1,8 @@
 use linux_embedded_hal::{I2cdev, Delay};
 use ina219::SyncIna219;
 use ina219::address::Address;
-use ina219::configuration::{Configuration, BusVoltageRange, Gain};
-use ina219::calibration::{Calibration};
+use ina219::configuration::{Configuration, BusVoltageRange};
+use ina219::calibration::{Calibration, Gain};
 use ina219::measurements::{Measurement, CurrentRegister, PowerRegister};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
