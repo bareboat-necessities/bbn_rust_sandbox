@@ -1,4 +1,4 @@
-use bme280::i2c::BMP280;
+use bme280::i2c::BME280;
 use linux_embedded_hal::{Delay, I2cdev};
 use std::thread;
 use std::time::Duration;
@@ -8,7 +8,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let i2c = I2cdev::new("/dev/i2c-1")?;
 
     // Initialize BMP280 sensor
-    let mut bmp280 = BMP280::new_primary(i2c);
+    let mut bmp280 = BME280::new_primary(i2c);
 
     // Initialize the sensor
     bmp280.init()?;
