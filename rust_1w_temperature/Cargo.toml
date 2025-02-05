@@ -1,0 +1,8 @@
+[package]
+name = "rust_1w_temperature"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+onewire = "0.3.13"
+ds18b20 = "0.1.1"
