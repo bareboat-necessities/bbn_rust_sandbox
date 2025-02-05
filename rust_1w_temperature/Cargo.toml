@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 one-wire-bus = "0.1.1"
-ds18b20 = "0.1.1"
+ds18b20-2 = "0.1.1"
