@@ -23,11 +23,6 @@ pub struct InmarsatMessage {
 }
 
 #[derive(Debug)]
-pub struct Seatalk1Message {
-    pub raw_data: String,
-}
-
-#[derive(Debug)]
 pub struct SeatalkMessage {
     pub talker_id: String,
     pub message_type: String,
@@ -40,9 +35,7 @@ pub enum MessageType {
     Nmea(NmeaSentence),
     Ais(NmeaSentence),
     Inmarsat(InmarsatMessage),
-    Seatalk1(Seatalk1Message),
     Seatalk(SeatalkMessage),
-
 }
 
 pub fn parse_inmarsat_header(header: &str) -> Result<InmarsatHeader, &'static str> {
@@ -144,13 +137,6 @@ pub fn parse_inmarsat_message(message: &str) -> Result<InmarsatMessage, &'static
     Ok(InmarsatMessage { header, payload })
 }
 
-pub fn parse_seatalk1_message(message: &str) -> Result<Seatalk1Message, &'static str> {
-    // Seatalk1 messages are typically raw binary data, but for simplicity, we'll treat them as strings
-    Ok(Seatalk1Message {
-        raw_data: message.to_string(),
-    })
-}
-
 pub fn parse_seatalk_message(message: &str) -> Result<SeatalkMessage, &'static str> {
     // Check if the sentence starts with '$'
     if !message.starts_with('$') {
@@ -213,10 +199,6 @@ pub fn detect_and_parse_message(message: &str) -> Result<MessageType, &'static s
         // Inmarsat-C message
         let inmarsat_message = parse_inmarsat_message(message)?;
         Ok(MessageType::Inmarsat(inmarsat_message))
-    } else if message.starts_with("0x") || message.chars().all(|c| c.is_ascii_hexdigit()) {
-        // Seatalk1 message (assumed to be raw hex data)
-        let seatalk1_message = parse_seatalk1_message(message)?;
-        Ok(MessageType::Seatalk1(seatalk1_message))
     } else {
         Err("Unknown message format")
     }
@@ -231,8 +213,6 @@ fn main() {
         "!AIVDM,1,1,,A,13HOI:0P0000VOHLCnHQKwvL05Ip,0*23",
         // Inmarsat-C example
         "/g:1-9-1234,s:egcterm1,n:213,c:1333636200*hh/$CSSM3,123456,005213,798,0,3,14,00,2012,04,05,14,30,3400,N,076,W,300*hh",
-        // Seatalk1 example (raw hex data)
-        "0x01 0x02 0x03 0x04",
         // SeaTalk example
         "$STALK,84,56,e,0,0,0,0,0,8*0F",
     ];
@@ -244,7 +224,6 @@ fn main() {
                 MessageType::Nmea(nmea) => println!("NMEA Sentence: {:?}", nmea),
                 MessageType::Ais(ais) => println!("AIS Sentence: {:?}", ais),
                 MessageType::Inmarsat(inmarsat) => println!("Inmarsat Message: {:?}", inmarsat),
-                MessageType::Seatalk1(seatalk1) => println!("Seatalk1 Message: {:?}", seatalk1),
                 MessageType::Seatalk(seatalk) => println!("SeaTalk Message: {:?}", seatalk),
             },
             Err(e) => eprintln!("Error parsing message: {}", e),
