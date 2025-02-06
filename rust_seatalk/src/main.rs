@@ -1,6 +1,27 @@
 use std::str;
 
 #[derive(Debug)]
+enum SteeringMode {
+    Manual,
+    Auto,
+    Unknown(u8),
+}
+
+#[derive(Debug)]
+enum HeadingStatus {
+    Valid,
+    Invalid,
+}
+
+#[derive(Debug)]
+enum EngineAlarmType {
+    Overheat,
+    LowOilPressure,
+    LowFuel,
+    Custom(u8),
+}
+
+#[derive(Debug)]
 enum SeatalkMessage {
     Depth {
         depth: f32, // in meters
@@ -54,6 +75,38 @@ enum SeatalkMessage {
     },
     NavigationCommand {
         command: NavigationCommandType,
+    },
+    // Course-related messages
+    CourseToSteer {
+        heading: f32,        // Desired heading in degrees
+        rudder_position: f32, // Rudder angle in degrees
+        mode: SteeringMode,
+    },
+    VesselHeading {
+        heading: f32,        // True heading in degrees
+        status: HeadingStatus,
+    },
+    CrossTrackError {
+        error: f32,          // Cross-track error in nautical miles
+    },
+
+    // Engine-related messages
+    EngineRPM {
+        rpm: u16,            // Engine RPM
+        engine_number: u8,   // Engine identifier (e.g., 0=Port, 1=Starboard)
+    },
+    EngineTemperature {
+        temperature: f32,    // Engine temperature in °C
+        engine_number: u8,
+    },
+    EngineFuelData {
+        fuel_flow: f32,      // Fuel flow rate (liters/hour)
+        fuel_total: f32,     // Total fuel used (liters)
+        engine_number: u8,
+    },
+    EngineAlarm {
+        alarm_type: EngineAlarmType,
+        engine_number: u8,
     },
     Unknown {
         message_type: u8,
@@ -347,6 +400,110 @@ impl SeatalkMessage {
                 }
             }
 
+            // Course to Steer (Message Type 0x85)
+            0x85 => {
+                if data.len() >= 5 {
+                    let heading = ((u16::from(data[1]) << 8) | u16::from(data[2])) as f32 / 2.0;
+                    let rudder_position = data[3] as i8 as f32; // Signed byte
+                    let mode = match data[4] {
+                        0x00 => SteeringMode::Manual,
+                        0x01 => SteeringMode::Auto,
+                        _ => SteeringMode::Unknown(data[4]),
+                    };
+                    Some(SeatalkMessage::CourseToSteer {
+                        heading,
+                        rudder_position,
+                        mode,
+                    })
+                } else {
+                    None
+                }
+            }
+
+            // Vessel Heading (Message Type 0x9B)
+            0x9B => {
+                if data.len() >= 3 {
+                    let heading = ((u16::from(data[1]) << 8) | u16::from(data[2])) as f32 / 2.0;
+                    let status = match data[3] & 0x01 {
+                        0x01 => HeadingStatus::Valid,
+                        _ => HeadingStatus::Invalid,
+                    };
+                    Some(SeatalkMessage::VesselHeading { heading, status })
+                } else {
+                    None
+                }
+            }
+
+            // Cross-Track Error (Message Type 0x8D)
+            0x8D => {
+                if data.len() >= 3 {
+                    let error = ((u16::from(data[1]) << 8) | u16::from(data[2])) as f32 / 10.0;
+                    Some(SeatalkMessage::CrossTrackError { error })
+                } else {
+                    None
+                }
+            }
+
+            // Engine RPM (Message Type 0x30)
+            0x30 => {
+                if data.len() >= 3 {
+                    let engine_number = data[1];
+                    let rpm = (u16::from(data[2]) << 8) | u16::from(data[3]);
+                    Some(SeatalkMessage::EngineRPM { rpm, engine_number })
+                } else {
+                    None
+                }
+            }
+
+            // Engine Temperature (Message Type 0x31)
+            0x31 => {
+                if data.len() >= 3 {
+                    let engine_number = data[1];
+                    let temperature = data[2] as f32;
+                    Some(SeatalkMessage::EngineTemperature {
+                        temperature,
+                        engine_number,
+                    })
+                } else {
+                    None
+                }
+            }
+
+            // Engine Fuel Data (Message Type 0x32)
+            0x32 => {
+                if data.len() >= 5 {
+                    let engine_number = data[1];
+                    let fuel_flow = ((u16::from(data[2]) << 8) | u16::from(data[3])) as f32 / 10.0;
+                    let fuel_total = ((u16::from(data[4]) << 8) | u16::from(data[5])) as f32;
+                    Some(SeatalkMessage::EngineFuelData {
+                        fuel_flow,
+                        fuel_total,
+                        engine_number,
+                    })
+                } else {
+                    None
+                }
+            }
+
+            // Engine Alarm (Message Type 0x87)
+            0x87 => {
+                if data.len() >= 3 {
+                    let engine_number = data[1];
+                    let alarm_type = match data[2] {
+                        0x01 => EngineAlarmType::Overheat,
+                        0x02 => EngineAlarmType::LowOilPressure,
+                        0x03 => EngineAlarmType::LowFuel,
+                        _ => EngineAlarmType::Custom(data[2]),
+                    };
+                    Some(SeatalkMessage::EngineAlarm {
+                        alarm_type,
+                        engine_number,
+                    })
+                } else {
+                    None
+                }
+            }
+
             // Unknown message type
             _ => Some(SeatalkMessage::Unknown {
                 message_type: data[0],
@@ -374,6 +531,13 @@ fn main() {
         "$STALK,5C526F7574652031", // Route Name ("Route 1")
         "$STALK,5D576179706F696E742031", // Waypoint Name ("Waypoint 1")
         "$STALK,5E01", // Navigation Command (Go To Waypoint)
+        "$STALK,8501F20300", // Course to Steer (heading=241.5°, rudder=-3°, manual)
+        "$STALK,9B03E801",   // Vessel Heading (heading=244.0°, valid)
+        "$STALK,8D0019",     // Cross-Track Error (2.5 nm)
+        "$STALK,30011234",   // Engine RPM (engine 1, RPM=4660)
+        "$STALK,310245",     // Engine Temperature (engine 2, 69°C)
+        "$STALK,3203006401F4", // Engine Fuel (engine 3, 10.0 L/h, 500 L total)
+        "$STALK,870201",     // Engine Alarm (engine 2, low oil pressure)
         "$STALK,FF2A2B2C", // Unknown message
     ];
 
