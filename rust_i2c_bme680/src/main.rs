@@ -1,6 +1,5 @@
 use bme680::*;
 use linux_embedded_hal::{I2cdev, Delay};
-use hal::*;
 use std::result;
 use std::time::Duration;
 use std::thread::sleep;
