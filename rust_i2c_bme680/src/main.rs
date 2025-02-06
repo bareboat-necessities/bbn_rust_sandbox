@@ -11,10 +11,9 @@ use std::time::Duration;
 use std::thread::sleep;
 
 
-fn main() -> result::Result<(), Error<<hal::I2cdev as i2c::Read>::Error, <hal::I2cdev as i2c::Write>::Error>>
-{
-    // Initialize device
-    let i2c = I2cdev {};        // Your I2C device construction will look different, perhaps using I2cdev::new(..)
+fn main() -> result::Result<(), Error<<hal::I2cdev as i2c::Read>::Error, <hal::I2cdev as i2c::Write>::Error>> {
+    // Initialize I2C device (e.g., /dev/i2c-1 on Raspberry Pi)
+    let i2c = I2cdev::new("/dev/i2c-1").unwrap();
     let mut delayer = Delay {}; // Your Delay construction will look different, perhaps using Delay::new(..)
     let mut dev = Bme680::init(i2c, &mut delayer, I2CAddress::Primary)?;
     let settings = SettingsBuilder::new()
