@@ -1,5 +1,3 @@
-#![no_std]
-
 use bme680::*;
 use core::result;
 use core::time::Duration;
