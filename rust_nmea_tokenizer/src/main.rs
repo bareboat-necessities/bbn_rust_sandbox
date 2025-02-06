@@ -24,8 +24,6 @@ pub struct InmarsatMessage {
 
 #[derive(Debug)]
 pub struct SeatalkMessage {
-    pub talker_id: String,
-    pub message_type: String,
     pub data_fields: Vec<String>,
     pub checksum: String,
 }
@@ -157,15 +155,6 @@ pub fn parse_seatalk_message(message: &str) -> Result<SeatalkMessage, &'static s
         return Err("No data fields found");
     }
 
-    // Extract talker ID and message type from the first field
-    let (talker_id, message_type) = {
-        let mt_field = fields[0];
-        (
-            mt_field.get(0..2).unwrap_or_default().to_string(),
-            mt_field.get(2..).unwrap_or_default().to_string(),
-        )
-    };
-
     // Process remaining data fields
     let data_fields = fields[1..]
         .iter()
@@ -173,8 +162,6 @@ pub fn parse_seatalk_message(message: &str) -> Result<SeatalkMessage, &'static s
         .collect();
 
     Ok(SeatalkMessage {
-        talker_id,
-        message_type,
         data_fields,
         checksum: checksum_part,
     })
