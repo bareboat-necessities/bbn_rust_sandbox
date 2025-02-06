@@ -1,5 +1,5 @@
 use embedded_dht_rs::{dht11::Dht11, dht20::Dht20, dht22::Dht22};
-use embedded_linux_hal::{
+use linux_embedded_hal::{
     clock::ClockControl, delay::Delay, gpio::{Io, Level, OutputOpenDrain, Pull}, i2c::I2C, peripherals::Peripherals, prelude::*, system::SystemControl
 };
 use fugit::HertzU32;
