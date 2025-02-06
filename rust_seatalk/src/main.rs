@@ -2,6 +2,15 @@ use std::str;
 
 #[derive(Debug)]
 enum SeatalkMessage {
+    Depth {
+        depth: f32, // in meters
+    },
+    Speed {
+        speed: f32, // in knots
+    },
+    WaterTemperature {
+        temperature: f32, // in degrees Celsius
+    },
     WindData {
         apparent_wind_angle: f32, // in degrees
         apparent_wind_speed: f32, // in knots
@@ -10,13 +19,28 @@ enum SeatalkMessage {
         heading: f32, // in degrees
         mode: AutopilotMode,
     },
-    Depth {
-        depth: f32, // in meters
+    GPSPosition {
+        latitude: f32, // in degrees
+        longitude: f32, // in degrees
     },
-    Speed {
-        speed: f32, // in knots
+    GPSTimeDate {
+        time: String, // HH:MM:SS
+        date: String, // DD/MM/YYYY
     },
-    Unknown(Vec<u8>), // For unrecognized messages
+    RudderPosition {
+        angle: f32, // in degrees
+    },
+    TripLog {
+        trip_distance: f32, // in nautical miles
+        total_distance: f32, // in nautical miles
+    },
+    Alarm {
+        alarm_type: AlarmType,
+    },
+    Unknown {
+        message_type: u8,
+        data: Vec<u8>,
+    },
 }
 
 #[derive(Debug)]
@@ -26,6 +50,14 @@ enum AutopilotMode {
     Wind,
     Track,
     Unknown(u8),
+}
+
+#[derive(Debug)]
+enum AlarmType {
+    Depth,
+    Anchor,
+    Wind,
+    Custom(u8),
 }
 
 impl SeatalkMessage {
@@ -55,6 +87,39 @@ impl SeatalkMessage {
         }
 
         match data[0] {
+            // Depth (Message Type 0x00)
+            0x00 => {
+                if data.len() >= 4 {
+                    let depth = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
+                    let depth = (depth as f32) * 0.1; // Convert to meters
+                    Some(SeatalkMessage::Depth { depth })
+                } else {
+                    None
+                }
+            }
+
+            // Speed (Message Type 0x20)
+            0x20 => {
+                if data.len() >= 3 {
+                    let speed = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
+                    let speed = (speed as f32) * 0.1; // Convert to knots
+                    Some(SeatalkMessage::Speed { speed })
+                } else {
+                    None
+                }
+            }
+
+            // Water Temperature (Message Type 0x27)
+            0x27 => {
+                if data.len() >= 3 {
+                    let temperature = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
+                    let temperature = (temperature as f32) * 0.1; // Convert to degrees Celsius
+                    Some(SeatalkMessage::WaterTemperature { temperature })
+                } else {
+                    None
+                }
+            }
+
             // Wind Data (Message Type 0x10)
             0x10 => {
                 if data.len() >= 5 {
@@ -89,30 +154,98 @@ impl SeatalkMessage {
                 }
             }
 
-            // Depth (Message Type 0x00)
-            0x00 => {
-                if data.len() >= 4 {
-                    let depth = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
-                    let depth = (depth as f32) * 0.1; // Convert to meters
-                    Some(SeatalkMessage::Depth { depth })
+            // GPS Position (Message Type 0x52)
+            0x52 => {
+                if data.len() >= 9 {
+                    let lat_degrees = u16::from(data[1]);
+                    let lat_minutes = u16::from(data[2]);
+                    let lat_seconds = u16::from(data[3]);
+                    let lat_direction = data[4];
+                    let lon_degrees = u16::from(data[5]);
+                    let lon_minutes = u16::from(data[6]);
+                    let lon_seconds = u16::from(data[7]);
+                    let lon_direction = data[8];
+
+                    let latitude = (lat_degrees as f32) + (lat_minutes as f32) / 60.0 + (lat_seconds as f32) / 3600.0;
+                    let latitude = if lat_direction == b'S' { -latitude } else { latitude };
+                    let longitude = (lon_degrees as f32) + (lon_minutes as f32) / 60.0 + (lon_seconds as f32) / 3600.0;
+                    let longitude = if lon_direction == b'W' { -longitude } else { longitude };
+
+                    Some(SeatalkMessage::GPSPosition {
+                        latitude,
+                        longitude,
+                    })
                 } else {
                     None
                 }
             }
 
-            // Speed (Message Type 0x20)
-            0x20 => {
+            // GPS Time and Date (Message Type 0x53)
+            0x53 => {
+                if data.len() >= 7 {
+                    let hour = data[1];
+                    let minute = data[2];
+                    let second = data[3];
+                    let day = data[4];
+                    let month = data[5];
+                    let year = data[6];
+
+                    let time = format!("{:02}:{:02}:{:02}", hour, minute, second);
+                    let date = format!("{:02}/{:02}/{:02}", day, month, year);
+
+                    Some(SeatalkMessage::GPSTimeDate { time, date })
+                } else {
+                    None
+                }
+            }
+
+            // Rudder Position (Message Type 0x9C)
+            0x9C => {
                 if data.len() >= 3 {
-                    let speed = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
-                    let speed = (speed as f32) * 0.1; // Convert to knots
-                    Some(SeatalkMessage::Speed { speed })
+                    let angle = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
+                    let angle = (angle as f32) * 0.5; // Convert to degrees
+                    Some(SeatalkMessage::RudderPosition { angle })
+                } else {
+                    None
+                }
+            }
+
+            // Trip Log (Message Type 0x21)
+            0x21 => {
+                if data.len() >= 7 {
+                    let trip_distance = ((u16::from(data[1]) & 0x7F) << 1) | ((u16::from(data[2]) & 0x80) >> 7);
+                    let total_distance = ((u16::from(data[3]) & 0x7F) << 1) | ((u16::from(data[4]) & 0x80) >> 7);
+                    let trip_distance = (trip_distance as f32) * 0.1; // Convert to nautical miles
+                    let total_distance = (total_distance as f32) * 0.1; // Convert to nautical miles
+                    Some(SeatalkMessage::TripLog {
+                        trip_distance,
+                        total_distance,
+                    })
+                } else {
+                    None
+                }
+            }
+
+            // Alarm (Message Type 0x86)
+            0x86 => {
+                if data.len() >= 2 {
+                    let alarm_type = match data[1] {
+                        0x01 => AlarmType::Depth,
+                        0x02 => AlarmType::Anchor,
+                        0x03 => AlarmType::Wind,
+                        _ => AlarmType::Custom(data[1]),
+                    };
+                    Some(SeatalkMessage::Alarm { alarm_type })
                 } else {
                     None
                 }
             }
 
             // Unknown message type
-            _ => Some(SeatalkMessage::Unknown(data.to_vec())),
+            _ => Some(SeatalkMessage::Unknown {
+                message_type: data[0],
+                data: data.to_vec(),
+            }),
         }
     }
 }
@@ -120,11 +253,17 @@ impl SeatalkMessage {
 fn main() {
     // Example NMEA sentences containing Seatalk data
     let nmea_sentences = [
-        "$STALK,10010203", // Wind Data
-        "$STALK,84040506", // Autopilot Command
-        "$STALK,00070809", // Depth
-        "$STALK,200A0B0C", // Speed
-        "$STALK,FF0D0E0F", // Unknown message
+        "$STALK,00010203", // Depth
+        "$STALK,20040506", // Speed
+        "$STALK,27070809", // Water Temperature
+        "$STALK,100A0B0C", // Wind Data
+        "$STALK,840D0E0F", // Autopilot Command
+        "$STALK,521112131415161718", // GPS Position
+        "$STALK,531A1B1C1D1E1F", // GPS Time and Date
+        "$STALK,9C202122", // Rudder Position
+        "$STALK,212324252627", // Trip Log
+        "$STALK,862829", // Alarm
+        "$STALK,FF2A2B2C", // Unknown message
     ];
 
     for sentence in nmea_sentences {
