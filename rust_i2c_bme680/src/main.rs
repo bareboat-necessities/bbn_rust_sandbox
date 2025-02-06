@@ -1,10 +1,5 @@
-extern crate bme680;
-
-// Note that you'll have to import your board crates types corresponding to
-// Delay and I2cdev.
-
 use bme680::*;
-use embedded_hal::blocking::i2c;
+use linux_embedded_hal::{I2cdev};
 use hal::*;
 use std::result;
 use std::time::Duration;
