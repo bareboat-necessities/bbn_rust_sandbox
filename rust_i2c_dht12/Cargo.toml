@@ -1,8 +1,0 @@
-[package]
-name = "rust_i2c_dht12"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-linux-embedded-hal = "0.4.0"  # For I2C communication on Linux
-embedded-dht-rs = "0.4.0"
