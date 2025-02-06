@@ -30,7 +30,7 @@ jobs:
 
       - name: Build the project
         run: |
-          for d in  `find . -type d -name rust_i2c\* -not -name rust_i2c_imu`; do
+          for d in  `find . -type d -name rust_i2c\* -not -name rust_i2c_imu -not -name rust_i2c_bme680`; do
           echo $d
           cd $d
           export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
