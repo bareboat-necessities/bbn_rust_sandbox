@@ -1,5 +1,5 @@
 extern crate bme680;
-extern crate embedded_hal;
+
 // Note that you'll have to import your board crates types corresponding to
 // Delay and I2cdev.
 
