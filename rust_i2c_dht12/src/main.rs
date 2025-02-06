@@ -1,9 +1,5 @@
-#![no_std]
-#![no_main]
-
 use embedded_dht_rs::{dht11::Dht11, dht20::Dht20, dht22::Dht22};
-use esp_backtrace as _;
-use esp_hal::{
+use embedded_linux_hal::{
     clock::ClockControl, delay::Delay, gpio::{Io, Level, OutputOpenDrain, Pull}, i2c::I2C, peripherals::Peripherals, prelude::*, system::SystemControl
 };
 use fugit::HertzU32;
