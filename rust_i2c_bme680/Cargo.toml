@@ -7,3 +7,4 @@ edition = "2021"
 embedded-hal = "=1.0"
 linux-embedded-hal = "0.4.0"  # For I2C communication on Linux
 bme680 = "0.6.0"              # BME680
+log = "0.4.25"
