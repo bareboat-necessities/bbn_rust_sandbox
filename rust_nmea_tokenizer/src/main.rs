@@ -28,11 +28,21 @@ pub struct Seatalk1Message {
 }
 
 #[derive(Debug)]
+pub struct SeatalkMessage {
+    pub talker_id: String,
+    pub message_type: String,
+    pub data_fields: Vec<String>,
+    pub checksum: String,
+}
+
+#[derive(Debug)]
 pub enum MessageType {
     Nmea(NmeaSentence),
     Ais(NmeaSentence),
     Inmarsat(InmarsatMessage),
     Seatalk1(Seatalk1Message),
+    Seatalk(SeatalkMessage),
+
 }
 
 pub fn parse_inmarsat_header(header: &str) -> Result<InmarsatHeader, &'static str> {
@@ -141,15 +151,64 @@ pub fn parse_seatalk1_message(message: &str) -> Result<Seatalk1Message, &'static
     })
 }
 
+pub fn parse_seatalk_message(message: &str) -> Result<SeatalkMessage, &'static str> {
+    // Check if the sentence starts with '$'
+    if !message.starts_with('$') {
+        return Err("SeaTalk sentence must start with '$'");
+    }
+
+    let content = &message[1..]; // Remove the leading '$'
+
+    // Split into data part and checksum part
+    let (data_part, checksum_part) = match content.split_once('*') {
+        Some((data, checksum)) => (data, checksum.to_string()),
+        None => return Err("Invalid SeaTalk sentence format"),
+    };
+
+    // Split data part into fields
+    let fields: Vec<&str> = data_part.split(',').collect();
+    if fields.is_empty() {
+        return Err("No data fields found");
+    }
+
+    // Extract talker ID and message type from the first field
+    let (talker_id, message_type) = {
+        let mt_field = fields[0];
+        (
+            mt_field.get(0..2).unwrap_or_default().to_string(),
+            mt_field.get(2..).unwrap_or_default().to_string(),
+        )
+    };
+
+    // Process remaining data fields
+    let data_fields = fields[1..]
+        .iter()
+        .map(|field| field.to_string())
+        .collect();
+
+    Ok(SeatalkMessage {
+        talker_id,
+        message_type,
+        data_fields,
+        checksum: checksum_part,
+    })
+}
+
 pub fn detect_and_parse_message(message: &str) -> Result<MessageType, &'static str> {
-    if message.starts_with('$') || message.starts_with('!') {
-        // NMEA or AIS message
-        let nmea_sentence = parse_nmea_sentence(message)?;
-        if message.starts_with('$') {
-            Ok(MessageType::Nmea(nmea_sentence))
+    if message.starts_with('$') {
+        if message.starts_with("$STALK") {
+            // SeaTalk message
+            let seatalk_message = parse_seatalk_message(message)?;
+            Ok(MessageType::Seatalk(seatalk_message))
         } else {
-            Ok(MessageType::Ais(nmea_sentence))
+            // NMEA message
+            let nmea_sentence = parse_nmea_sentence(message)?;
+            Ok(MessageType::Nmea(nmea_sentence))
         }
+    } else if message.starts_with('!') {
+        // AIS message
+        let nmea_sentence = parse_nmea_sentence(message)?;
+        Ok(MessageType::Ais(nmea_sentence))
     } else if message.starts_with('/') {
         // Inmarsat-C message
         let inmarsat_message = parse_inmarsat_message(message)?;
@@ -174,6 +233,8 @@ fn main() {
         "/g:1-9-1234,s:egcterm1,n:213,c:1333636200*hh/$CSSM3,123456,005213,798,0,3,14,00,2012,04,05,14,30,3400,N,076,W,300*hh",
         // Seatalk1 example (raw hex data)
         "0x01 0x02 0x03 0x04",
+        // SeaTalk example
+        "$STALK,84,56,e,0,0,0,0,0,8*0F",
     ];
 
     for example in examples {
@@ -184,6 +245,7 @@ fn main() {
                 MessageType::Ais(ais) => println!("AIS Sentence: {:?}", ais),
                 MessageType::Inmarsat(inmarsat) => println!("Inmarsat Message: {:?}", inmarsat),
                 MessageType::Seatalk1(seatalk1) => println!("Seatalk1 Message: {:?}", seatalk1),
+                MessageType::Seatalk(seatalk) => println!("SeaTalk Message: {:?}", seatalk),
             },
             Err(e) => eprintln!("Error parsing message: {}", e),
         }
