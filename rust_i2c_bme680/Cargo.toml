@@ -1,0 +1,8 @@
+[package]
+name = "rust_i2c_bme680"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+linux-embedded-hal = "0.4.0"  # For I2C communication on Linux
+bme680 = "0.6.0"              # BME680
