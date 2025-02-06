@@ -12,7 +12,7 @@ fn main() {
 
     loop {
         // Read 5 bytes from the DHT12 sensor
-        if let Err(e) = i2c.read(&mut buffer) {
+        if let Err(e) = i2c.read(DHT12_I2C_ADDR, &mut buffer) {
             eprintln!("Failed to read from DHT12: {}", e);
             continue;
         }
