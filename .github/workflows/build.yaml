@@ -38,6 +38,7 @@ jobs:
           make -j 4
           ls -l
           ls -l *
+          cp ../*.h ../IMUDrivers/
           cd $DD
 
       - name: Build the project
