@@ -39,7 +39,9 @@ jobs:
           cd $DD
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/RTIMULib
           mkdir ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target
+          mkdir ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target/release
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target/RTIMULib
+          ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target/release/RTIMULib
 
       - name: Build the project
         run: |
@@ -48,6 +50,8 @@ jobs:
           cd $d
           export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
           pwd
+          ls
+          echo "ls ../../"
           ls ../../
           RUST_BACKTRACE=full cargo build --release --target aarch64-unknown-linux-gnu
           cd ..
