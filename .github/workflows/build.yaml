@@ -37,6 +37,7 @@ jobs:
           cmake ..
           make -j 4
           ls -l
+          ls -l *
           cd $DD
 
       - name: Build the project
