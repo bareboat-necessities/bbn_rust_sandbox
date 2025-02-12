@@ -28,6 +28,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu libclang-dev
           git clone --depth=1 https://github.com/seandepagnier/RTIMULib2
+          pwd
           ln -s ${HOME}/work/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/RTIMULib
 
       - name: Build the project
