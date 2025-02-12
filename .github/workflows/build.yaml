@@ -37,6 +37,7 @@ jobs:
           cmake ..
           make -j 4
           cd $DD
+          ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/RTIMULib
 
       - name: Build the project
         run: |
