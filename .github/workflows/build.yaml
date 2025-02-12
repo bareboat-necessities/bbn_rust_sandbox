@@ -27,6 +27,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu libclang-dev
+          git clone --depth=1 https://github.com/seandepagnier/RTIMULib2
+          ln -s RTIMULib2/RTIMULib RTIMULib
 
       - name: Build the project
         run: |
