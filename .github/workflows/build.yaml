@@ -31,7 +31,10 @@ jobs:
           DD=$(pwd)
           cd ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/
           git clone --depth=1 https://github.com/seandepagnier/RTIMULib2 
-          cd RTIMULib2
+          cd RTIMULib2/RTIMULib
+          mkdir build
+          cd build
+          cmake ..
           make -j 4
           cd $DD
 
