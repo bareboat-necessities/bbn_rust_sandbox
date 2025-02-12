@@ -36,6 +36,7 @@ jobs:
           cd build
           cmake ..
           make -j 4
+          sudo make install
           ls -l
           ls -l *
           cp ../*.h ../IMUDrivers/
