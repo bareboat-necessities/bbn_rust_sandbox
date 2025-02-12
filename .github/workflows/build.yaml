@@ -53,6 +53,8 @@ jobs:
           ls
           echo "ls ../../"
           ls ../../
+          echo "ls target/release"
+          ls target/release
           RUST_BACKTRACE=full cargo build --release --target aarch64-unknown-linux-gnu
           cd ..
           done
