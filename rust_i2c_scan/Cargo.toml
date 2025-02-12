@@ -1,5 +1,5 @@
 [package]
-name = "rust-i2c-scan"
+name = "rust_i2c_scan"
 version = "0.1.0"
 edition = "2021"
 
