@@ -39,6 +39,7 @@ jobs:
           cd $DD
           mkdir ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target
           mkdir ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target/release
+          sudo ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ../../RTIMULib
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/RTIMULib
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/RTIMULib
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/RTIMULib
