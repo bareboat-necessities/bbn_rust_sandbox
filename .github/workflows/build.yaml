@@ -45,6 +45,7 @@ jobs:
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target/RTIMULib
           ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/target/release/RTIMULib
+          find . -name RTIMULSM6DS33LIS3MDL.h
 
       - name: Build the project
         run: |
