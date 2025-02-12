@@ -59,7 +59,7 @@ jobs:
           echo "ls ../../"
           ls ../../
           echo "ls target/release"
-          if [ -d target/release ]; then ls target/release; fi
+          if [ -d target/release ]; then ls target/release; ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib /home/runner/.cargo/registry/src/RTIMULib fi
           RUST_BACKTRACE=full cargo build --release --target aarch64-unknown-linux-gnu
           cd ..
           done
