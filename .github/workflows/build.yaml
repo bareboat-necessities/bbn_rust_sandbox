@@ -34,9 +34,9 @@ jobs:
           cd RTIMULib2/RTIMULib
           mkdir build
           cd build
-          ls -l
           cmake ..
           make -j 4
+          ls -l
           cd $DD
 
       - name: Build the project
