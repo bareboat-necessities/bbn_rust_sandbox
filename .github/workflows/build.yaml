@@ -39,6 +39,7 @@ jobs:
           ls -l
           ls -l *
           cp ../*.h ../IMUDrivers/
+          cp ../IMUDrivers/*.h ../
           cd $DD
 
       - name: Build the project
