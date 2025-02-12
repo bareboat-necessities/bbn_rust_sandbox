@@ -38,6 +38,8 @@ jobs:
           make -j 4
           sudo make install
           ls -l
+          ls -l *
+          cp ../*.h ../IMUDrivers/
           cd $DD
 
       - name: Build the project
@@ -48,7 +50,9 @@ jobs:
           export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
           pwd
           ls
+          if [ -d RTIMULib2 ]; then ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib ${HOME}/.cargo/registry/src/RTIMULib; fi
+          if [ -d RTIMULib2 ]; then ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib/IMUDrivers ${HOME}/.cargo/registry/src/IMUDrivers; fi
+          if [ -d RTIMULib2 ]; then ln -s ${HOME}/work/bbn_rust_sandbox/bbn_rust_sandbox/rust_i2c_imu/RTIMULib2/RTIMULib/IMUDrivers ${HOME}/.cargo/registry/src/IMUDrivers/IMUDrivers; fi
           RUST_BACKTRACE=full cargo build --release --target aarch64-unknown-linux-gnu
           cd ..
           done
-
