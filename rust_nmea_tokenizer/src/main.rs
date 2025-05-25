@@ -1,3 +1,4 @@
+
 #[derive(Debug)]
 pub struct NmeaSentence {
     pub sentence_type: char,
@@ -29,11 +30,23 @@ pub struct SeatalkMessage {
 }
 
 #[derive(Debug)]
+pub struct DscMessage {
+    pub format_specifier: String,
+    pub address: String,
+    pub category: String,
+    pub self_id: String,
+    pub subsequent_communications: String,
+    pub data_fields: Vec<String>,
+    pub checksum: Option<String>,
+}
+
+#[derive(Debug)]
 pub enum MessageType {
     Nmea(NmeaSentence),
     Ais(NmeaSentence),
     Inmarsat(InmarsatMessage),
     Seatalk(SeatalkMessage),
+    Dsc(DscMessage),
 }
 
 pub fn parse_inmarsat_header(header: &str) -> Result<InmarsatHeader, &'static str> {
@@ -119,6 +132,64 @@ pub fn parse_nmea_sentence(sentence: &str) -> Result<NmeaSentence, &'static str>
     })
 }
 
+pub fn parse_dsc_message(message: &str) -> Result<DscMessage, &'static str> {
+    // DSC messages start with $ and have DSC as talker ID
+    if !message.starts_with('$') {
+        return Err("DSC message must start with '$'");
+    }
+
+    let content = &message[1..]; // Remove the leading '$'
+
+    // Split into data part and checksum part
+    let (data_part, checksum_part) = match content.split_once('*') {
+        Some((data, checksum)) => (data, Some(checksum)),
+        None => (content, None),
+    };
+
+    // Split data part into fields
+    let fields: Vec<&str> = data_part.split(',').collect();
+    if fields.len() < 6 {
+        return Err("DSC message must have at least 6 fields");
+    }
+
+    // Verify talker ID is DSC
+    if fields[0] != "DSC" {
+        return Err("DSC message must have 'DSC' as talker ID");
+    }
+
+    // Extract required DSC fields
+    let format_specifier = fields[1].to_string();
+    let address = fields[2].to_string();
+    let category = fields[3].to_string();
+    let self_id = fields[4].to_string();
+    let subsequent_communications = fields[5].to_string();
+
+    // Process remaining data fields
+    let data_fields = fields[6..]
+        .iter()
+        .map(|field| field.to_string())
+        .collect();
+
+    // Process checksum if present
+    let checksum = checksum_part.and_then(|cs| {
+        if cs.len() >= 2 {
+            Some(cs[0..2].to_string())
+        } else {
+            None
+        }
+    });
+
+    Ok(DscMessage {
+        format_specifier,
+        address,
+        category,
+        self_id,
+        subsequent_communications,
+        data_fields,
+        checksum,
+    })
+}
+
 pub fn parse_inmarsat_message(message: &str) -> Result<InmarsatMessage, &'static str> {
     // Split the message into header and payload
     let (header_part, payload_part) = match message.split_once('/') {
@@ -173,6 +244,10 @@ pub fn detect_and_parse_message(message: &str) -> Result<MessageType, &'static s
             // SeaTalk message
             let seatalk_message = parse_seatalk_message(message)?;
             Ok(MessageType::Seatalk(seatalk_message))
+        } else if message.starts_with("$DSC") {
+            // DSC message
+            let dsc_message = parse_dsc_message(message)?;
+            Ok(MessageType::Dsc(dsc_message))
         } else {
             // NMEA message
             let nmea_sentence = parse_nmea_sentence(message)?;
@@ -202,6 +277,8 @@ fn main() {
         "/g:1-9-1234,s:egcterm1,n:213,c:1333636200*hh/$CSSM3,123456,005213,798,0,3,14,00,2012,04,05,14,30,3400,N,076,W,300*hh",
         // SeaTalk example
         "$STALK,84,56,e,0,0,0,0,0,8*0F",
+        // DSC example
+        "$DSC,12,3380405810,00,1234567890,72,1234567890,00,00,00,00,00,00,00*3B",
     ];
 
     for example in examples {
@@ -212,6 +289,7 @@ fn main() {
                 MessageType::Ais(ais) => println!("AIS Sentence: {:?}", ais),
                 MessageType::Inmarsat(inmarsat) => println!("Inmarsat Message: {:?}", inmarsat),
                 MessageType::Seatalk(seatalk) => println!("SeaTalk Message: {:?}", seatalk),
+                MessageType::Dsc(dsc) => println!("DSC Message: {:?}", dsc),
             },
             Err(e) => eprintln!("Error parsing message: {}", e),
         }
